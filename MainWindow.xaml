@@ -75,7 +75,6 @@
             <Rectangle Grid.Row="5" Grid.Column="5" Fill="{StaticResource LightTileColor}" />
             <Rectangle Grid.Row="5" Grid.Column="6" Fill="{StaticResource DarkTileColor}" />
             <Rectangle Grid.Row="5" Grid.Column="7" Fill="{StaticResource LightTileColor}" />
-
             <Rectangle Grid.Row="6" Grid.Column="0" Fill="{StaticResource LightTileColor}" />
             <Rectangle Grid.Row="6" Grid.Column="1" Fill="{StaticResource DarkTileColor}" />
             <Rectangle Grid.Row="6" Grid.Column="2" Fill="{StaticResource LightTileColor}" />
