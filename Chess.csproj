@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="pieces\blackBishop.png" />
     <Resource Include="pieces\whiteQueen.png" />
   </ItemGroup>
 
