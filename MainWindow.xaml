@@ -5,96 +5,251 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Chess"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="800">
+        Title="MainWindow" Height="480" Width="480">
     <Grid>
+        <Grid.Resources>
+            <SolidColorBrush x:Key="LightTileColor" Color="White" />
+            <SolidColorBrush x:Key="DarkTileColor" Color="Gray" />
+        </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Chess Board" FontSize="20" HorizontalAlignment="Center" Margin="0,10"/>
         <UniformGrid Grid.Row="1" Rows="8" Columns="8">
             <!-- Create the chessboard tiles using rectangles -->
-            <UniformGrid.Resources>
-                <SolidColorBrush x:Key="LightTileColor" Color="White" />
-                <SolidColorBrush x:Key="DarkTileColor" Color="Gray" />
-            </UniformGrid.Resources>
-            <!-- Create the chessboard tiles using rectangles -->
-            <Rectangle Grid.Row="0" Grid.Column="0" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="1" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="2" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="3" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="4" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="5" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="6" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="0" Grid.Column="7" Fill="{StaticResource DarkTileColor}" />
 
+            <!-- Add the piece icons using Grid and Image controls -->
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whiteRook.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whiteKnight.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="2">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whiteBishop.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="3">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whiteQueen.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="4">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whiteKing.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="5">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whiteBishop.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="6">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whiteKnight.png" />
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="7">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whiteRook.png" />
+            </Grid>
 
+            <Grid Grid.Row="1" Grid.Column="0">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="2">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="3">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="4">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="5">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="6">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="7">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
 
-            <Rectangle Grid.Row="1" Grid.Column="0" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="1" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="2" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="3" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="4" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="5" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="6" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="1" Grid.Column="7" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="0" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="1" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="2" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="3" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="4" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="5" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="6" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="2" Grid.Column="7" Fill="{StaticResource DarkTileColor}" />
+            <Grid Grid.Row="2" Grid.Column="0">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="1">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="2">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="3">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="4">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="5">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="6">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="7">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
 
+            <Grid Grid.Row="3" Grid.Column="0">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="1">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="2">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="3">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="4">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="5">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="6">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="3" Grid.Column="7">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
 
-            <Rectangle Grid.Row="3" Grid.Column="0" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="1" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="2" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="3" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="4" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="5" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="6" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="3" Grid.Column="7" Fill="{StaticResource LightTileColor}" />
+            <Grid Grid.Row="4" Grid.Column="0">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="1">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="2">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="3">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="4">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="5">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="6">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="4" Grid.Column="7">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
 
-            <Rectangle Grid.Row="4" Grid.Column="0" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="1" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="2" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="3" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="4" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="5" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="6" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="4" Grid.Column="7" Fill="{StaticResource DarkTileColor}" />
+            <Grid Grid.Row="5" Grid.Column="0">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="1">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="2">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="3">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="4">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="5">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="6">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="7">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+            </Grid>
 
+            <Grid Grid.Row="6" Grid.Column="0">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="1">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="2">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="3">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="4">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="5">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="6">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
+            <Grid Grid.Row="6" Grid.Column="7">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/whitePawn.png" />
+            </Grid>
 
-            <Rectangle Grid.Row="5" Grid.Column="0" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="1" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="2" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="3" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="4" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="5" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="6" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="5" Grid.Column="7" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="0" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="1" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="2" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="3" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="4" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="5" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="6" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="6" Grid.Column="7" Fill="{StaticResource DarkTileColor}" />
-
-            <Rectangle Grid.Row="7" Grid.Column="0" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="1" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="2" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="3" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="4" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="5" Fill="{StaticResource LightTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="6" Fill="{StaticResource DarkTileColor}" />
-            <Rectangle Grid.Row="7" Grid.Column="7" Fill="{StaticResource LightTileColor}" />
-            <!-- Repeat the rectangle pattern to create the chessboard pattern -->
-            <!-- Add more rectangles for the rest of the chessboard tiles -->
-            <!-- Adjust the Grid.Column values accordingly -->
+            <Grid Grid.Row="7" Grid.Column="0">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/blackRook.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="1">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/blackKnight.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="2">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/blackBishop.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="3">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/blackQueen.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="4">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/blackKing.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="5">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/blackBishop.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="6">
+                <Rectangle Fill="{StaticResource DarkTileColor}" />
+                <Image Source="pieces/blackKnight.png" />
+            </Grid>
+            <Grid Grid.Row="7" Grid.Column="7">
+                <Rectangle Fill="{StaticResource LightTileColor}" />
+                <Image Source="pieces/blackRook.png" />
+            </Grid>
         </UniformGrid>
     </Grid>
 </Window>
