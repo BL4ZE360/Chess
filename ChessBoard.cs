@@ -6,7 +6,7 @@
 			board = new ChessPiece[8, 8];
 		}
 
-		public void resetBoard() {
+		public void ResetBoard() {
 			AddPiece(new Rook(0, 0, ChessPieceColor.White, this));
 			AddPiece(new Knight(1, 0, ChessPieceColor.White, this));
 			AddPiece(new Bishop(2, 0, ChessPieceColor.White, this));

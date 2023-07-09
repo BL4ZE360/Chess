@@ -1,83 +1,90 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
+using System.Windows.Input;
 
 namespace Chess {
 	public partial class MainWindow : Window {
-		private Dictionary<Image, ChessPiece> pieceMap;
-		private Image selectedPiece;
-		private Point initialPosition;
+		private ChessBoard chessBoard;
+		private ChessPiece selectedPiece;
 
 		public MainWindow() {
 			InitializeComponent();
-			InitializeChessboard();
+
+			// Create the chessboard
+			chessBoard = new ChessBoard();
+			chessBoard.ResetBoard();
+
+			UpdateUI();
 		}
 
-		private void InitializeChessboard() {
-			pieceMap = new Dictionary<Image, ChessPiece>();
+		private void ChessPiece_MouseDown(object sender, MouseButtonEventArgs e) {
+			// Get the clicked image
+			Image clickedImage = (Image) sender;
 
-			// Add chess piece images to the chessboard
-			AddChessPiece("whiteRook.png", 0, 0, ChessPieceType.Rook, ChessPieceColor.White);
-			AddChessPiece("whiteKnight.png", 1, 0, ChessPieceType.Knight, ChessPieceColor.White);
-			// Add more chess piece images...
+			// Extract the piece type from the image name
+			string imageName = clickedImage.Name;
 
-			// Attach event handlers for mouse click events
-			foreach (var imagePiece in pieceMap.Keys) {
-				imagePiece.MouseLeftButtonDown += ChessPiece_MouseLeftButtonDown;
+			// Determine the piece color and type from the image name
+			string colorString = imageName.Contains("white") ? "White" : "Black";
+			string pieceTypeName = imageName.Replace(colorString.ToLower(), "");
+			string pieceTypeString = new string(pieceTypeName.Where(c => !Char.IsDigit(c)).ToArray());
+
+
+			// Convert the piece type string to the ChessPieceType enum value
+			ChessPieceType pieceType;
+			if (!Enum.TryParse(pieceTypeString, out pieceType)) {
+				// Invalid piece type
+				MessageBox.Show("Invalid piece type - ", pieceTypeString);
+				return;
+			}
+
+			// Determine the piece color based on the image name
+			ChessPieceColor pieceColor = colorString == "White" ? ChessPieceColor.White : ChessPieceColor.Black;
+
+			// Handle the piece type and color accordingly
+			switch (pieceType) {
+				case ChessPieceType.Pawn:
+					// Handle pawn logic
+					break;
+				case ChessPieceType.Rook:
+					// Handle rook logic
+					break;
+					// Handle other piece types
 			}
 		}
 
-		private void AddChessPiece(string imagePath, int column, int row, ChessPieceType type, ChessPieceColor color) {
-			Image imagePiece = new Image();
-			imagePiece.Source = new BitmapImage(new Uri(imagePath, UriKind.Relative));
+		private void UpdateUI() {
+			// Clear all image visibility
+			foreach (UIElement child in uniformGrid.Children) {
+				if (child is Image image) {
+					image.Visibility = Visibility.Collapsed;
+				}
+			}
 
-			Grid.SetColumn(imagePiece, column);
-			Grid.SetRow(imagePiece, row);
+			// Show image for each chess piece
+			for (int x = 0; x < 8; x++) {
+				for (int y = 0; y < 8; y++) {
+					ChessPiece piece = chessBoard.GetPiece(x, y);
 
-			chessboardGrid.Children.Add(imagePiece);
-			pieceMap.Add(imagePiece, new ChessPiece(type, color, column, row));
-		}
+					if (piece != null) {
+						// Construct the image name dynamically based on piece type and color
+						string pieceName = $"{piece.Color.ToString().ToLower()}{piece.Type.ToString().ToLower()}";
+						if (piece.Type == ChessPieceType.Pawn) {
+							pieceName += (y + 1).ToString(); // Append the pawn number (1 to 8)
+						} else {
+							pieceName += (x * 8 + y).ToString(); // Append index based on row and column indices
+						}
 
-		private void ChessPiece_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			selectedPiece = (Image) sender;
-			initialPosition = e.GetPosition(chessboardGrid);
-			// You can perform additional actions when a piece is selected, if needed
-		}
-
-		private void chessboardGrid_MouseMove(object sender, System.Windows.Input.MouseEventArgs e) {
-			if (selectedPiece != null) {
-				Point currentPosition = e.GetPosition(chessboardGrid);
-				double deltaX = currentPosition.X - initialPosition.X;
-				double deltaY = currentPosition.Y - initialPosition.Y;
-
-				Canvas.SetLeft(selectedPiece, deltaX);
-				Canvas.SetTop(selectedPiece, deltaY);
+						Image image = uniformGrid.FindName(pieceName) as Image;
+						if (image != null) {
+							image.Visibility = Visibility.Visible;
+						}
+					}
+				}
 			}
 		}
 
-		private void chessboardGrid_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
-			if (selectedPiece != null) {
-				// Perform move validation and update the piece's position if the move is legal
-				// You can access the associated ChessPiece object for the selected piece from the pieceMap dictionary
-				// For example: ChessPiece selectedChessPiece = pieceMap[selectedPiece];
-
-				// Reset selectedPiece and initialPosition variables
-				selectedPiece = null;
-				initialPosition = new Point();
-			}
-		}
 	}
-
-	public enum ChessPieceType {
-		Rook,
-		Knight,
-		Bishop,
-		Queen,
-		King,
-		Pawn
-	}
-
 }
-
