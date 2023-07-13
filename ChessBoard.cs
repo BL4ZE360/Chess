@@ -35,6 +35,17 @@
 			return board[x, y];
 		}
 
+		public ChessPiece[] GetAllPieces() {
+			ChessPiece[] pieces = new ChessPiece[32];
+			int index = 0;
+			for (int y = 0; y < 8; y++) {
+				for (int x = 0; x < 8; x++) {
+					if (board[x, y] != null) pieces[index++] = board[x, y];
+				}
+			}
+			return pieces;
+		}
+
 		public void AddPiece(ChessPiece piece) {
 			board[piece.X, piece.Y] = piece;
 		}
@@ -46,7 +57,7 @@
 		}
 
 		public bool IsValidPosition(int x, int y) {
-			return (x < 0 || x >= 8 || y < 0 || y >= 8);
+			return (x >= 0 && x < 8 && y >= 0 && y < 8);
 		}
 	}
 }

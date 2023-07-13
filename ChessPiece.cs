@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Chess {
 	public enum ChessPieceColor {
@@ -13,6 +14,7 @@ namespace Chess {
 		King,
 		Pawn
 	}
+
 
 	public abstract class ChessPiece {
 		public ChessPieceColor Color { get; protected set; }
@@ -29,6 +31,7 @@ namespace Chess {
 		}
 
 		public abstract bool IsValidMove(int newX, int newY);
+		public abstract List<int> GetPossibleMoves();
 	}
 
 	public class Rook : ChessPiece {
@@ -52,7 +55,38 @@ namespace Chess {
 			} else { return false; }
 
 			return true;
+		}
 
+		public override List<int> GetPossibleMoves() {
+			List<int> squares = new List<int>();
+			bool xNeg = true, xPos = true, yNeg = true, yPos = true;
+			for (int i = 1; i < 8; i++) {
+				if (xNeg && i <= X) {
+					if (Board.IsOccupied(X - i, Y)) {
+						xNeg = false;
+						if (Board.GetPiece(X - i, Y).Color != Color) { squares.Add(X - i); squares.Add(Y); }
+					} else { squares.Add(X - i); squares.Add(Y); }
+				}
+				if (xPos && i <= 7 - X) {
+					if (Board.IsOccupied(X + i, Y)) {
+						xPos = false;
+						if (Board.GetPiece(X + i, Y).Color != Color) { squares.Add(X + i); squares.Add(Y); }
+					} else { squares.Add(X + i); squares.Add(Y); }
+				}
+				if (yNeg && i <= Y) {
+					if (Board.IsOccupied(X, Y - i)) {
+						yNeg = false;
+						if (Board.GetPiece(X, Y - i).Color != Color) { squares.Add(X); squares.Add(Y - i); }
+					} else { squares.Add(X); squares.Add(Y - i); }
+				}
+				if (yPos && i <= 7 - Y) {
+					if (Board.IsOccupied(X, Y + i)) {
+						yPos = false;
+						if (Board.GetPiece(X, Y + i).Color != Color) { squares.Add(X); squares.Add(Y + i); }
+					} else { squares.Add(X); squares.Add(Y + i); }
+				}
+			}
+			return squares;
 		}
 	}
 
@@ -67,6 +101,21 @@ namespace Chess {
 
 			// Knight-specific move validation logic
 			return (diffX == 2 && diffY == 1) || (diffX == 1 && diffY == 2);
+		}
+
+		public override List<int> GetPossibleMoves() {
+			List<int> squares = new List<int>();
+			int[,] moves = new int[8, 2] {{X - 2, Y - 1}, {X - 2, Y + 1},  {X - 1, Y - 2}, {X - 1, Y + 2},
+					{X + 1, Y - 2}, {X + 1, Y + 2}, {X + 2, Y - 1}, {X + 2, Y + 1}};
+
+			for (int i = 0; i < 7; i++) {
+				int x = moves[i, 0];
+				int y = moves[i, 1];
+				if (!Board.IsValidPosition(x, y)) continue;
+				if (!Board.IsOccupied(x, y) || Board.GetPiece(x, y).Color != Color) { squares.Add(x); squares.Add(y); }
+			}
+
+			return squares;
 		}
 	}
 
@@ -92,6 +141,38 @@ namespace Chess {
 			}
 			return false;
 		}
+
+		public override List<int> GetPossibleMoves() {
+			List<int> squares = new List<int>();
+			bool topLeft = true, bottomLeft = true, topRight = true, bottomRight = true;
+			for (int i = 1; i < 8; i++) {
+				if (topLeft && i <= Math.Min(X, Y)) {
+					if (Board.IsOccupied(X - i, Y - i)) {
+						topLeft = false;
+						if (Board.GetPiece(X - i, Y - i).Color != Color) { squares.Add(X - i); squares.Add(Y - i); }
+					} else { squares.Add(X - i); squares.Add(Y - i); }
+				}
+				if (bottomLeft && i <= Math.Min(7 - X, 7 - Y)) {
+					if (Board.IsOccupied(X + i, Y + i)) {
+						bottomLeft = false;
+						if (Board.GetPiece(X + i, Y + i).Color != Color) { squares.Add(X + i); squares.Add(Y + i); }
+					} else { squares.Add(X + i); squares.Add(Y + i); }
+				}
+				if (topRight && i <= Math.Min(7 - X, Y)) {
+					if (Board.IsOccupied(X + i, Y - i)) {
+						topRight = false;
+						if (Board.GetPiece(X + i, Y - i).Color != Color) { squares.Add(X + i); squares.Add(Y - i); }
+					} else { squares.Add(X + i); squares.Add(Y - i); }
+				}
+				if (bottomRight && i <= Math.Min(X, 7 - Y)) {
+					if (Board.IsOccupied(X - i, Y + i)) {
+						bottomRight = false;
+						if (Board.GetPiece(X - i, Y + i).Color != Color) { squares.Add(X - i); squares.Add(Y + i); }
+					} else { squares.Add(X - i); squares.Add(Y + i); }
+				}
+			}
+			return squares;
+		}
 	}
 
 	public class King : ChessPiece {
@@ -105,6 +186,21 @@ namespace Chess {
 
 			// King-specific move validation logic
 			return (diffY < 2 && diffX < 2 && diffX + diffY > 0);
+		}
+
+		public override List<int> GetPossibleMoves() {
+			List<int> squares = new List<int>();
+			int[,] moves = new int[8, 2] {{X - 1, Y - 1}, {X - 1, Y},  {X - 1, Y + 1}, {X, Y - 1},
+					{X, Y + 1}, {X + 1, Y - 1}, {X + 1, Y}, {X + 1, Y + 1}};
+
+			for (int i = 0; i < 7; i++) {
+				int x = moves[i, 0];
+				int y = moves[i, 1];
+				if (!Board.IsValidPosition(x, y)) continue;
+				if (!Board.IsOccupied(x, y) || Board.GetPiece(x, y).Color != Color) { squares.Add(x); squares.Add(y); }
+			}
+
+			return squares;
 		}
 	}
 
@@ -131,6 +227,63 @@ namespace Chess {
 
 			return false;
 		}
+
+		public override List<int> GetPossibleMoves() {
+			List<int> squares = new List<int>();
+			bool xNeg = true, xPos = true, yNeg = true, yPos = true;
+			bool topLeft = true, bottomLeft = true, topRight = true, bottomRight = true;
+			for (int i = 1; i < 8; i++) {
+				if (xNeg && i <= X) {
+					if (Board.IsOccupied(X - i, Y)) {
+						xNeg = false;
+						if (Board.GetPiece(X - i, Y).Color != Color) { squares.Add(X - i); squares.Add(Y); }
+					} else { squares.Add(X - i); squares.Add(Y); }
+				}
+				if (xPos && i <= 7 - X) {
+					if (Board.IsOccupied(X + i, Y)) {
+						xPos = false;
+						if (Board.GetPiece(X + i, Y).Color != Color) { squares.Add(X + i); squares.Add(Y); }
+					} else { squares.Add(X + i); squares.Add(Y); }
+				}
+				if (yNeg && i <= Y) {
+					if (Board.IsOccupied(X, Y - i)) {
+						yNeg = false;
+						if (Board.GetPiece(X, Y - i).Color != Color) { squares.Add(X); squares.Add(Y - i); }
+					} else { squares.Add(X); squares.Add(Y - i); }
+				}
+				if (yPos && i <= 7 - Y) {
+					if (Board.IsOccupied(X, Y + i)) {
+						yPos = false;
+						if (Board.GetPiece(X, Y + i).Color != Color) { squares.Add(X); squares.Add(Y + i); }
+					} else { squares.Add(X); squares.Add(Y + i); }
+				}
+				if (topLeft && i <= Math.Min(X, Y)) {
+					if (Board.IsOccupied(X - i, Y - i)) {
+						topLeft = false;
+						if (Board.GetPiece(X - i, Y - i).Color != Color) { squares.Add(X - i); squares.Add(Y - i); }
+					} else { squares.Add(X - i); squares.Add(Y - i); }
+				}
+				if (bottomLeft && i <= Math.Min(7 - X, 7 - Y)) {
+					if (Board.IsOccupied(X + i, Y + i)) {
+						bottomLeft = false;
+						if (Board.GetPiece(X + i, Y + i).Color != Color) { squares.Add(X + i); squares.Add(Y + i); }
+					} else { squares.Add(X + i); squares.Add(Y + i); }
+				}
+				if (topRight && i <= Math.Min(7 - X, Y)) {
+					if (Board.IsOccupied(X + i, Y - i)) {
+						topRight = false;
+						if (Board.GetPiece(X + i, Y - i).Color != Color) { squares.Add(X + i); squares.Add(Y - i); }
+					} else { squares.Add(X + i); squares.Add(Y - i); }
+				}
+				if (bottomRight && i <= Math.Min(X, 7 - Y)) {
+					if (Board.IsOccupied(X - i, Y + i)) {
+						bottomRight = false;
+						if (Board.GetPiece(X - i, Y + i).Color != Color) { squares.Add(X - i); squares.Add(Y + i); }
+					} else { squares.Add(X - i); squares.Add(Y + i); }
+				}
+			}
+			return squares;
+		}
 	}
 
 	public class Pawn : ChessPiece {
@@ -149,6 +302,20 @@ namespace Chess {
 				|| (newY == Y + 2 * yDir && newX == X && !Board.IsOccupied(newX, newY) && !Board.IsOccupied(newX, Y + yDir) && Y == startY)) {
 				return true;
 			} else { return false; }
+		}
+
+		public override List<int> GetPossibleMoves() {
+			List<int> squares = new List<int>();
+			int[,] moves = new int[8, 2] {{X - 1, Y + 1}, {X - 1, Y - 1}, {X, Y + 1}, {X, Y + 2},
+					{X, Y - 1}, {X, Y - 2}, {X + 1, Y + 1}, {X + 1, Y - 1}};
+
+			for (int i = 0; i < 7; i++) {
+				int x = moves[i, 0];
+				int y = moves[i, 1];
+				if (IsValidMove(x, y)) { squares.Add(x); squares.Add(y); }
+			}
+
+			return squares;
 		}
 	}
 }

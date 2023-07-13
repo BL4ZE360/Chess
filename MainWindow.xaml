@@ -8,8 +8,8 @@
         Title="MainWindow" Height="480" Width="610">
     <Grid>
         <Grid.Resources>
-            <SolidColorBrush x:Key="LightTileColor" Color="White" />
-            <SolidColorBrush x:Key="DarkTileColor" Color="Gray" />
+            <SolidColorBrush x:Key="LightTileColor" Color="LightGray" />
+            <SolidColorBrush x:Key="DarkTileColor" Color="DarkGray" />
         </Grid.Resources>
 
         <Grid.ColumnDefinitions>
