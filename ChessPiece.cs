@@ -14,6 +14,18 @@ namespace Chess {
 		King,
 		Pawn
 	}
+	public static class EnumExtensions {
+		public static string ToNameString(this ChessPieceColor color) {
+			string colorName = Enum.GetName(typeof(ChessPieceColor), color);
+			return colorName.ToLower();
+		}
+
+		public static string ToNameString(this ChessPieceType type) {
+			string typeName = Enum.GetName(typeof(ChessPieceType), type);
+			return $"{char.ToUpper(typeName[0])}{typeName.Substring(1)}";
+		}
+	}
+
 
 
 	public abstract class ChessPiece {

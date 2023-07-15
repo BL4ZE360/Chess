@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Image = System.Windows.Controls.Image;
 
 namespace Chess {
 	public partial class MainWindow : Window {
 		private ChessBoard chessBoard;
 		private ChessPiece? selectedPiece;
 		private Dictionary<Image, ChessPiece> imageToChessPieceMap;
-		private ChessPiece[] pieces;
 
 		SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110));
 		SolidColorBrush colorLight = new SolidColorBrush(Color.FromRgb(210, 210, 210));
@@ -25,24 +27,9 @@ namespace Chess {
 			// Create the chessboard
 			chessBoard = new ChessBoard();
 			chessBoard.ResetBoard();
-			SetChequers();
 
-			pieces = chessBoard.GetAllPieces();
-
-			// Create the image-to-chesspiece map
-			int i = 0;
 			imageToChessPieceMap = new Dictionary<Image, ChessPiece>();
-			foreach (UIElement child in uniformGrid.Children) {
-				if (child is Grid grid) {
-					Image image = grid.Children.OfType<Image>().FirstOrDefault();
-					if (image != null) {
-						ChessPiece chessPiece = pieces[i++];
-
-						// Add the image and the ChessPiece object to the map
-						imageToChessPieceMap.Add(image, chessPiece);
-					}
-				}
-			}
+			InitializeChessboard();
 
 			UpdateUI();
 		}
@@ -67,6 +54,63 @@ namespace Chess {
 				}
 			}
 		}
+
+		private void InitializeChessboard() {
+			// Clear the existing children of the uniformGrid
+			uniformGrid.Children.Clear();
+
+			for (int y = 0; y < 8; y++) {
+				for (int x = 0; x < 8; x++) {
+					// Create the grid for each tile
+					Grid grid = new Grid();
+
+					// Set the row and column properties
+					grid.SetValue(Grid.ColumnProperty, x);
+					grid.SetValue(Grid.RowProperty, y);
+
+					// Set the tile color based on the row and column values
+					SolidColorBrush tileColor = (x + y) % 2 == 0 ? colorLight : colorDark;
+
+					// Create and add the rectangle to the grid
+					Rectangle rectangle = new Rectangle();
+					rectangle.Fill = tileColor;
+					grid.Children.Add(rectangle);
+
+					// Check if the grid coordinates correspond to a piece position
+					if (HasPiece(x, y)) {
+						// Create and add the image for the piece
+						Image pieceImage = new Image();
+						pieceImage.Source = GetPieceImageSource(x, y);
+						pieceImage.MouseDown += ChessPiece_MouseDown;
+
+						// Add the piece image to the grid
+						grid.Children.Add(pieceImage);
+
+						imageToChessPieceMap.Add(pieceImage, chessBoard.GetPiece(x, y));
+					}
+
+					// Add the grid to the uniformGrid
+					uniformGrid.Children.Add(grid);
+				}
+			}
+		}
+
+		private bool HasPiece(int x, int y) {
+			// Check if the grid coordinates correspond to a piece position
+			return chessBoard.GetPiece(x, y) != null;
+		}
+
+		private ImageSource GetPieceImageSource(int x, int y) {
+			// Implement your own logic here to determine the image source for the piece at the given position
+			// Return the appropriate image source based on the piece type and color
+			// Example:
+			// return new BitmapImage(new Uri("pieces/whiteRook.png", UriKind.Relative));
+			ChessPiece piece = chessBoard.GetPiece(x, y);
+			string pieceName = piece.Color.ToNameString() + piece.Type.ToNameString();
+
+			return new BitmapImage(new Uri("pieces/" + pieceName + ".png", UriKind.Relative));
+		}
+
 
 		private void ChessPiece_MouseDown(object sender, MouseButtonEventArgs e) {
 			// Get the clicked image
