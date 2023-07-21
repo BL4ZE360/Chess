@@ -13,6 +13,7 @@ namespace Chess {
 	public partial class MainWindow : Window {
 		private ChessBoard chessBoard;
 		private ChessPiece? selectedPiece;
+		private List<int>? possMoves;
 		private Dictionary<Image, ChessPiece> imageToChessPieceMap;
 
 		SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110));
@@ -32,27 +33,6 @@ namespace Chess {
 			InitializeChessboard();
 
 			UpdateUI();
-		}
-
-
-		private void SetChequers() {
-			for (int x = 0; x < 8; x++) {
-				for (int y = 0; y < 8; y++) {
-					// Find the corresponding Grid element in the UniformGrid based on x and y coordinates
-					Grid grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == y && Grid.GetColumn(g) == x);
-
-					if (grid != null) {
-						// Find the Rectangle element within the Grid
-						Rectangle rectangle = grid.Children.OfType<Rectangle>().FirstOrDefault();
-
-						if (rectangle != null) {
-							// Adjust the mask color based on the original tile color
-							if (x % 2 == y % 2) rectangle.Fill = colorLight;
-							else rectangle.Fill = colorDark;
-						}
-					}
-				}
-			}
 		}
 
 		private void InitializeChessboard() {
@@ -101,10 +81,7 @@ namespace Chess {
 		}
 
 		private ImageSource GetPieceImageSource(int x, int y) {
-			// Implement your own logic here to determine the image source for the piece at the given position
 			// Return the appropriate image source based on the piece type and color
-			// Example:
-			// return new BitmapImage(new Uri("pieces/whiteRook.png", UriKind.Relative));
 			ChessPiece piece = chessBoard.GetPiece(x, y);
 			string pieceName = piece.Color.ToNameString() + piece.Type.ToNameString();
 
@@ -134,7 +111,7 @@ namespace Chess {
 			}
 
 			// If initial click, show avaible squares to go to
-			List<int> possMoves = selectedPiece.GetPossibleMoves();
+			possMoves = selectedPiece.GetPossibleMoves();
 
 			for (int i = 0; i < possMoves.Count; i += 2) {
 				x = possMoves[i];
@@ -158,9 +135,24 @@ namespace Chess {
 
 		private void ClearSelected() {
 			if (selectedPiece == null) return;
-
-			SetChequers();
 			selectedPiece = null;
+			if (possMoves == null) return;
+
+			for (int i = 0; i < possMoves.Count; i += 2) {
+				Grid? grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == possMoves[i + 1] && Grid.GetColumn(g) == possMoves[i]);
+
+				if (grid != null) {
+					// Find the Rectangle element within the Grid
+					Rectangle? rectangle = grid.Children.OfType<Rectangle>().FirstOrDefault();
+
+					if (rectangle != null) {
+						// Adjust the mask color based on the original tile color
+						if (possMoves[i] % 2 == possMoves[i + 1] % 2) rectangle.Fill = colorLight;
+						else rectangle.Fill = colorDark;
+					}
+				}
+			}
+			possMoves = null;
 		}
 
 		private void UpdateUI() {
