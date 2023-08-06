@@ -44,6 +44,7 @@ namespace Chess {
 
 		public abstract bool IsValidMove(int newX, int newY);
 		public abstract List<int> GetPossibleMoves();
+		public abstract ChessPiece Clone();
 	}
 
 	public class Rook : ChessPiece {
@@ -100,6 +101,10 @@ namespace Chess {
 			}
 			return squares;
 		}
+
+		public override ChessPiece Clone() {
+			return new Rook(X, Y, Color, Board);
+		}
 	}
 
 	public class Knight : ChessPiece {
@@ -128,6 +133,9 @@ namespace Chess {
 			}
 
 			return squares;
+		}
+		public override ChessPiece Clone() {
+			return new Knight(X, Y, Color, Board);
 		}
 	}
 
@@ -185,6 +193,9 @@ namespace Chess {
 			}
 			return squares;
 		}
+		public override ChessPiece Clone() {
+			return new Bishop(X, Y, Color, Board);
+		}
 	}
 
 	public class King : ChessPiece {
@@ -213,6 +224,9 @@ namespace Chess {
 			}
 
 			return squares;
+		}
+		public override ChessPiece Clone() {
+			return new King(X, Y, Color, Board);
 		}
 	}
 
@@ -296,6 +310,9 @@ namespace Chess {
 			}
 			return squares;
 		}
+		public override ChessPiece Clone() {
+			return new Queen(X, Y, Color, Board);
+		}
 	}
 
 	public class Pawn : ChessPiece {
@@ -310,7 +327,7 @@ namespace Chess {
 			// Pawn-specific move validation logic
 			if ((newY == Y + yDir && (
 					(newX == X && !Board.IsOccupied(newX, newY))
-					|| (Math.Abs(newX - X) == 1 && Board.IsOccupied(newX, newY))))
+					|| (Math.Abs(newX - X) == 1 && !Board.IsOccupied(newX, newY) && Board.IsOccupied(X, newY))))
 				|| (newY == Y + 2 * yDir && newX == X && !Board.IsOccupied(newX, newY) && !Board.IsOccupied(newX, Y + yDir) && Y == startY)) {
 				return true;
 			} else { return false; }
@@ -328,6 +345,9 @@ namespace Chess {
 			}
 
 			return squares;
+		}
+		public override ChessPiece Clone() {
+			return new Pawn(X, Y, Color, Board);
 		}
 	}
 }

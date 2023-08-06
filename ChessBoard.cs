@@ -1,6 +1,6 @@
 ﻿namespace Chess {
 	public class ChessBoard {
-		private ChessPiece[,] board;
+		private ChessPiece?[,] board;
 
 		public ChessBoard() {
 			board = new ChessPiece[8, 8];
@@ -37,6 +37,22 @@
 
 		public void AddPiece(ChessPiece piece) {
 			board[piece.X, piece.Y] = piece;
+		}
+
+		public ChessPiece? MovePiece(ChessPiece piece, int x, int y) {
+			// Get piece's current co-ords
+			int prevX = piece.X, prevY = piece.Y;
+			ChessPiece? killedPiece = board[x, y];
+
+			// Check for if a piece is killed and clone it
+			if (killedPiece != null) killedPiece = killedPiece.Clone();
+
+			// Move piece across the board
+			board[prevX, prevY] = null;
+			piece.X = x; piece.Y = y;
+			board[x, y] = piece;
+
+			return killedPiece;
 		}
 
 		public bool IsOccupied(int x, int y) {

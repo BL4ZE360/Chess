@@ -13,21 +13,26 @@ namespace Chess {
 	public partial class MainWindow : Window {
 		private ChessBoard chessBoard;
 		private ChessPiece? selectedPiece;
-		private List<int>? possMoves;
+		private List<int> possMoves = new List<int>();
 		private Dictionary<Image, ChessPiece> imageToChessPieceMap;
+		private ChessPieceColor turn = ChessPieceColor.White;
 
-		SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110));
-		SolidColorBrush colorLight = new SolidColorBrush(Color.FromRgb(210, 210, 210));
-		SolidColorBrush selectedDark = new SolidColorBrush(Color.FromRgb(81, 100, 150));
-		SolidColorBrush selectedLight = new SolidColorBrush(Color.FromRgb(117, 144, 217));
-		SolidColorBrush maskColorDark = new SolidColorBrush(Color.FromRgb(81, 150, 100)); // Green translucent mask color
-		SolidColorBrush maskColorLight = new SolidColorBrush(Color.FromRgb(117, 217, 144)); // Green translucent mask color
+		readonly SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110));
+		readonly SolidColorBrush colorLight = new SolidColorBrush(Color.FromRgb(210, 210, 210));
+		readonly SolidColorBrush selectedDark = new SolidColorBrush(Color.FromRgb(81, 100, 150));
+		readonly SolidColorBrush selectedLight = new SolidColorBrush(Color.FromRgb(117, 144, 217));
+		readonly SolidColorBrush maskColorDark = new SolidColorBrush(Color.FromRgb(81, 150, 100));
+		readonly SolidColorBrush maskColorLight = new SolidColorBrush(Color.FromRgb(117, 217, 144));
+
+
 		public MainWindow() {
 			InitializeComponent();
 
 			// Create the chessboard
 			chessBoard = new ChessBoard();
 			chessBoard.ResetBoard();
+
+			turn = ChessPieceColor.White;
 
 			imageToChessPieceMap = new Dictionary<Image, ChessPiece>();
 			InitializeChessboard();
@@ -54,6 +59,7 @@ namespace Chess {
 					// Create and add the rectangle to the grid
 					Rectangle rectangle = new Rectangle();
 					rectangle.Fill = tileColor;
+					rectangle.MouseDown += ChessBoardTile_MouseDown;
 					grid.Children.Add(rectangle);
 
 					// Check if the grid coordinates correspond to a piece position
@@ -92,16 +98,31 @@ namespace Chess {
 		private void ChessPiece_MouseDown(object sender, MouseButtonEventArgs e) {
 			// Get the clicked image
 			Image clickedImage = (Image) sender;
-			if (selectedPiece != null) ClearSelected();
+			if (selectedPiece != null) {
+				ChessPiece? killedPiece = null;
+				imageToChessPieceMap.TryGetValue(clickedImage, out killedPiece);
+				if (killedPiece == null || killedPiece.Color == selectedPiece.Color) ClearSelected();
+				else {
+					for (int i = 0; i < possMoves.Count; i += 2) {
+						if (possMoves[i] == killedPiece.X && possMoves[i + 1] == killedPiece.Y) {
+							MessageBox.Show("Killing " + killedPiece.Color.ToNameString() + killedPiece.Type.ToNameString());
+
+							MovePiece(selectedPiece, killedPiece.X, killedPiece.Y);
+							return;
+						}
+					}
+				}
+			}
 
 			imageToChessPieceMap.TryGetValue(clickedImage, out selectedPiece);
 			int x = selectedPiece.X, y = selectedPiece.Y;
+			if (selectedPiece.Color != turn) return;
 
-			Grid grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == y && Grid.GetColumn(g) == x);
+			Grid? grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == y && Grid.GetColumn(g) == x);
 
 			if (grid != null) {
 				// Find the Rectangle element within the Grid
-				Rectangle rectangle = grid.Children.OfType<Rectangle>().FirstOrDefault();
+				Rectangle? rectangle = grid.Children.OfType<Rectangle>().FirstOrDefault();
 
 				if (rectangle != null) {
 					// Adjust the mask color based on the original tile color
@@ -122,7 +143,7 @@ namespace Chess {
 
 				if (grid != null) {
 					// Find the Rectangle element within the Grid
-					Rectangle rectangle = grid.Children.OfType<Rectangle>().FirstOrDefault();
+					Rectangle? rectangle = grid.Children.OfType<Rectangle>().FirstOrDefault();
 
 					if (rectangle != null) {
 						// Adjust the mask color based on the original tile color
@@ -133,10 +154,98 @@ namespace Chess {
 			}
 		}
 
+		private void ChessBoardTile_MouseDown(object sender, MouseButtonEventArgs e) {
+			Rectangle clickedRectangle = (Rectangle) sender;
+
+			Grid? parentGrid = VisualTreeHelper.GetParent(clickedRectangle) as Grid;
+
+			if (parentGrid != null) {
+				// Get the row and column of the clicked rectangle
+				int x = (int) parentGrid.GetValue(Grid.ColumnProperty);
+				int y = (int) parentGrid.GetValue(Grid.RowProperty);
+
+				// Move the piece if it is to a valid tile
+				if (selectedPiece != null) {
+					possMoves = selectedPiece.GetPossibleMoves();
+					for (int i = 0; i < possMoves.Count; i += 2) {
+						if (possMoves[i] == x && possMoves[i + 1] == y) {
+							// Move the piece to the new tile
+							MovePiece(selectedPiece, x, y);
+
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		private void MovePiece(ChessPiece piece, int x, int y) {
+			if (piece.Color != turn) return;
+
+			ClearSelected();
+
+			// Update the piece's position
+			ChessPiece? killedPiece = chessBoard.MovePiece(piece, x, y);
+
+			// Get the image of the piece being moved
+			Image pieceImage = imageToChessPieceMap.FirstOrDefault(x => x.Value == piece).Key;
+
+			// Get the Grids of the new and old location
+			Grid? newGrid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == y && Grid.GetColumn(g) == x);
+			Grid? oldGrid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == piece.Y && Grid.GetColumn(g) == piece.X);
+
+			if (newGrid != null && oldGrid != null) {
+				if (killedPiece != null) {
+					// Remove the killed piece from the imageToChessPieceMap
+					Image imageToRemove = imageToChessPieceMap.FirstOrDefault(x => x.Value == killedPiece).Key;
+					if (imageToRemove != null) {
+						MessageBox.Show("Check 1");
+						imageToChessPieceMap.Remove(imageToRemove);
+						newGrid.Children.Remove(imageToRemove); // Completely remove the killed piece from the UI
+
+						imageToRemove.Visibility = Visibility.Collapsed;
+					}
+				}
+
+
+				// Remove the pieceImage from the oldGrid
+				oldGrid.Children.Remove(pieceImage);
+
+				// Create a new Image with the same source
+				Image newPieceImage = new Image {
+					Source = pieceImage.Source,
+					Stretch = Stretch.Uniform,
+					Margin = new Thickness(2),
+					VerticalAlignment = VerticalAlignment.Center,
+					HorizontalAlignment = HorizontalAlignment.Center,
+				};
+
+				newPieceImage.MouseDown += ChessPiece_MouseDown;
+
+				// Update the image position in the UI
+				newPieceImage.SetValue(Grid.RowProperty, y);
+				newPieceImage.SetValue(Grid.ColumnProperty, x);
+
+				// Update the mapping in the imageToChessPieceMap dictionary
+				imageToChessPieceMap.Remove(pieceImage);
+				imageToChessPieceMap[newPieceImage] = piece;
+				newGrid.Children.Add(newPieceImage);
+
+				pieceImage.Visibility = Visibility.Collapsed;
+			}
+
+
+			// Switch turn color
+			if (turn == ChessPieceColor.White) turn = ChessPieceColor.Black;
+			else turn = ChessPieceColor.White;
+
+		}
+
 		private void ClearSelected() {
 			if (selectedPiece == null) return;
-			selectedPiece = null;
-			if (possMoves == null) return;
+
+			possMoves.Add(selectedPiece.X);
+			possMoves.Add(selectedPiece.Y);
 
 			for (int i = 0; i < possMoves.Count; i += 2) {
 				Grid? grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == possMoves[i + 1] && Grid.GetColumn(g) == possMoves[i]);
@@ -152,7 +261,8 @@ namespace Chess {
 					}
 				}
 			}
-			possMoves = null;
+			selectedPiece = null;
+			possMoves = new List<int>();
 		}
 
 		private void UpdateUI() {
@@ -177,10 +287,9 @@ namespace Chess {
 							pieceName += (x * 8 + y).ToString(); // Append index based on row and column indices
 						}
 
-						Image image = uniformGrid.FindName(pieceName) as Image;
-						if (image != null) {
-							image.Visibility = Visibility.Visible;
-						}
+						Image? image = uniformGrid.FindName(pieceName) as Image;
+						if (image != null) image.Visibility = Visibility.Visible;
+
 					}
 				}
 			}
