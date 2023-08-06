@@ -327,7 +327,7 @@ namespace Chess {
 			// Pawn-specific move validation logic
 			if ((newY == Y + yDir && (
 					(newX == X && !Board.IsOccupied(newX, newY))
-					|| (Math.Abs(newX - X) == 1 && !Board.IsOccupied(newX, newY) && Board.IsOccupied(X, newY))))
+					|| (Math.Abs(newX - X) == 1 && Board.IsOccupied(newX, newY))))
 				|| (newY == Y + 2 * yDir && newX == X && !Board.IsOccupied(newX, newY) && !Board.IsOccupied(newX, Y + yDir) && Y == startY)) {
 				return true;
 			} else { return false; }
