@@ -185,7 +185,7 @@ namespace Chess {
 			ClearSelected();
 
 			// Update the piece's position
-			ChessPiece? killedPiece = chessBoard.MovePiece(piece, x, y);
+			ChessPiece? killedPiece = chessBoard.GetPiece(x, y);
 
 			// Get the image of the piece being moved
 			Image pieceImage = imageToChessPieceMap.FirstOrDefault(x => x.Value == piece).Key;
@@ -196,17 +196,17 @@ namespace Chess {
 
 			if (newGrid != null && oldGrid != null) {
 				if (killedPiece != null) {
-					// Remove the killed piece from the imageToChessPieceMap
-					Image imageToRemove = imageToChessPieceMap.FirstOrDefault(x => x.Value == killedPiece).Key;
-					if (imageToRemove != null) {
-						MessageBox.Show("Check 1");
-						imageToChessPieceMap.Remove(imageToRemove);
-						newGrid.Children.Remove(imageToRemove); // Completely remove the killed piece from the UI
+					Image killedImage = imageToChessPieceMap.FirstOrDefault(x => x.Value == killedPiece).Key;
 
-						imageToRemove.Visibility = Visibility.Collapsed;
+					if (killedImage != null) {
+						imageToChessPieceMap.Remove(killedImage);
+						newGrid.Children.Remove(killedImage); // Completely remove the killed piece from the UI
+
+						killedImage.Visibility = Visibility.Collapsed;
 					}
 				}
 
+				chessBoard.MovePiece(piece, x, y);
 
 				// Remove the pieceImage from the oldGrid
 				oldGrid.Children.Remove(pieceImage);

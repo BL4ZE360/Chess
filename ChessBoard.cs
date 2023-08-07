@@ -31,7 +31,7 @@
 			}
 		}
 
-		public ChessPiece GetPiece(int x, int y) {
+		public ChessPiece? GetPiece(int x, int y) {
 			return board[x, y];
 		}
 
