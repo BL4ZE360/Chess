@@ -16,6 +16,7 @@ namespace Chess {
 		private List<int> possMoves = new List<int>();
 		private Dictionary<Image, ChessPiece> imageToChessPieceMap;
 		private ChessPieceColor turn = ChessPieceColor.White;
+		private bool whiteCheck = false, blackCheck = false; // whiteCheck shows if white has been checked
 
 		readonly SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110));
 		readonly SolidColorBrush colorLight = new SolidColorBrush(Color.FromRgb(210, 210, 210));
@@ -164,23 +165,24 @@ namespace Chess {
 				int x = (int) parentGrid.GetValue(Grid.ColumnProperty);
 				int y = (int) parentGrid.GetValue(Grid.RowProperty);
 
-				// Move the piece if it is to a valid tile
-				if (selectedPiece != null) {
-					possMoves = selectedPiece.GetPossibleMoves();
-					for (int i = 0; i < possMoves.Count; i += 2) {
-						if (possMoves[i] == x && possMoves[i + 1] == y) {
-							// Move the piece to the new tile
-							MovePiece(selectedPiece, x, y);
-
-							break;
-						}
-					}
-				}
+				if (selectedPiece != null && MoveIsValid(x, y)) MovePiece(selectedPiece, x, y);
 			}
 		}
 
 		private void MovePiece(ChessPiece piece, int x, int y) {
-			if (piece.Color != turn) return;
+			if (piece.Color != turn || !MoveIsValid(x, y)) return;
+
+			// If in check, make sure they are un-checking themselves, else reject
+			ChessBoard sim = chessBoard.Clone();
+			ChessPiece simPiece = sim.GetPiece(piece.X, piece.Y);
+
+			// Simulate the movement and check if still in check
+			sim.MovePiece(simPiece, x, y);
+			sim.turn = turn;
+			if (sim.IsThereCheck()) {
+				MessageBox.Show("Doing that move leaves you in Check");
+				return;
+			}
 
 			ClearSelected();
 
@@ -205,6 +207,8 @@ namespace Chess {
 						killedImage.Visibility = Visibility.Collapsed;
 					}
 				}
+
+
 
 				chessBoard.MovePiece(piece, x, y);
 
@@ -239,6 +243,21 @@ namespace Chess {
 			if (turn == ChessPieceColor.White) turn = ChessPieceColor.Black;
 			else turn = ChessPieceColor.White;
 
+			CheckForCheck();
+
+		}
+
+		private void CheckForCheck() {
+			whiteCheck = false; blackCheck = false;
+			if (turn == ChessPieceColor.White) whiteCheck = chessBoard.IsThereCheck();
+			else blackCheck = chessBoard.IsThereCheck();
+
+			if (chessBoard.IsThereCheckMate()) {
+				MessageBox.Show("END Of GAME");
+				if (turn == ChessPieceColor.White && whiteCheck) MessageBox.Show("CHECKMATE - BLACK WINS!");
+				else if (turn == ChessPieceColor.Black && blackCheck) MessageBox.Show("CHECKMATE - WHITE WINS!");
+				else MessageBox.Show("STALEMATE - IT'S A DRAW!");
+			}
 		}
 
 		private void ClearSelected() {
@@ -263,6 +282,16 @@ namespace Chess {
 			}
 			selectedPiece = null;
 			possMoves = new List<int>();
+		}
+
+		// Returns whether moving the selected piece to [x,y] is valid (i.e. is in possMoves)
+		private bool MoveIsValid(int x, int y) {
+			if (selectedPiece == null || possMoves == null) return false;
+
+			for (int i = 0; i < possMoves.Count; i += 2) {
+				if (possMoves[i] == x && possMoves[i + 1] == y) return true;
+			}
+			return false;
 		}
 
 		private void UpdateUI() {
