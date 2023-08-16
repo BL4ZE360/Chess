@@ -122,6 +122,7 @@ namespace Chess {
 							ChessPiece piece = sim.GetPiece(row, col);
 
 							sim.MovePiece(piece, moves[i], moves[i + 1]);
+							sim.turn = turn;
 							if (!sim.IsThereCheck()) return false;
 						}
 					}
