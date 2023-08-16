@@ -125,7 +125,7 @@ namespace Chess {
 			int[,] moves = new int[8, 2] {{X - 2, Y - 1}, {X - 2, Y + 1},  {X - 1, Y - 2}, {X - 1, Y + 2},
 					{X + 1, Y - 2}, {X + 1, Y + 2}, {X + 2, Y - 1}, {X + 2, Y + 1}};
 
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 8; i++) {
 				int x = moves[i, 0];
 				int y = moves[i, 1];
 				if (!Board.IsValidPosition(x, y)) continue;
@@ -216,7 +216,7 @@ namespace Chess {
 			int[,] moves = new int[8, 2] {{X - 1, Y - 1}, {X - 1, Y},  {X - 1, Y + 1}, {X, Y - 1},
 					{X, Y + 1}, {X + 1, Y - 1}, {X + 1, Y}, {X + 1, Y + 1}};
 
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 8; i++) {
 				int x = moves[i, 0];
 				int y = moves[i, 1];
 				if (!Board.IsValidPosition(x, y)) continue;
