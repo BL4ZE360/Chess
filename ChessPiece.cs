@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 
 namespace Chess {
+	// Both colours a piece can be
 	public enum ChessPieceColor {
 		White,
 		Black
 	}
+
+	// All types a chess piece can be
 	public enum ChessPieceType {
 		Rook,
 		Knight,
@@ -15,11 +18,13 @@ namespace Chess {
 		Pawn
 	}
 	public static class EnumExtensions {
+		// Returns the color of the piece in string format
 		public static string ToNameString(this ChessPieceColor color) {
 			string colorName = Enum.GetName(typeof(ChessPieceColor), color);
 			return colorName.ToLower();
 		}
 
+		// Returns the type of the piece in string format
 		public static string ToNameString(this ChessPieceType type) {
 			string typeName = Enum.GetName(typeof(ChessPieceType), type);
 			return $"{char.ToUpper(typeName[0])}{typeName.Substring(1)}";
@@ -77,6 +82,8 @@ namespace Chess {
 		public override List<int> GetPossibleMoves() {
 			List<int> squares = new List<int>();
 			bool xNeg = true, xPos = true, yNeg = true, yPos = true;
+
+			// Iterate away from the piece in the 4 straight directions, recording valid tiles to move to and recording when a direction is blocked or invalid
 			for (int i = 1; i < 8; i++) {
 				if (xNeg && i <= X) {
 					if (Board.IsOccupied(X - i, Y)) {
@@ -127,6 +134,8 @@ namespace Chess {
 
 		public override List<int> GetPossibleMoves() {
 			List<int> squares = new List<int>();
+
+			// All possible moves must be an "L-shape" away from the piece so are bound to these 8 positions
 			int[,] moves = new int[8, 2] {{X - 2, Y - 1}, {X - 2, Y + 1},  {X - 1, Y - 2}, {X - 1, Y + 2},
 					{X + 1, Y - 2}, {X + 1, Y + 2}, {X + 2, Y - 1}, {X + 2, Y + 1}};
 
@@ -171,6 +180,8 @@ namespace Chess {
 		public override List<int> GetPossibleMoves() {
 			List<int> squares = new List<int>();
 			bool topLeft = true, bottomLeft = true, topRight = true, bottomRight = true;
+
+			// Iterate away from the piece in the 4 diagonal directions, recording valid tiles to move to and recording when a direction is blocked on invalid
 			for (int i = 1; i < 8; i++) {
 				if (topLeft && i <= Math.Min(X, Y)) {
 					if (Board.IsOccupied(X - i, Y - i)) {
@@ -220,6 +231,8 @@ namespace Chess {
 
 		public override List<int> GetPossibleMoves() {
 			List<int> squares = new List<int>();
+
+			// All moves must be board by the 8 tiles adjacent to the piece
 			int[,] moves = new int[8, 2] {{X - 1, Y - 1}, {X - 1, Y},  {X - 1, Y + 1}, {X, Y - 1},
 					{X, Y + 1}, {X + 1, Y - 1}, {X + 1, Y}, {X + 1, Y + 1}};
 
@@ -266,6 +279,8 @@ namespace Chess {
 			List<int> squares = new List<int>();
 			bool xNeg = true, xPos = true, yNeg = true, yPos = true;
 			bool topLeft = true, bottomLeft = true, topRight = true, bottomRight = true;
+
+			// Iterate away from the piece in all 8 directions, recording valid tiles to move to, and recording when a direction is then blocked or invalid
 			for (int i = 1; i < 8; i++) {
 				if (xNeg && i <= X) {
 					if (Board.IsOccupied(X - i, Y)) {
@@ -346,6 +361,8 @@ namespace Chess {
 
 		public override List<int> GetPossibleMoves() {
 			List<int> squares = new List<int>();
+
+			// All possible moves must be between 2 up to 2 down or 1 diagonally
 			int[,] moves = new int[8, 2] {{X - 1, Y + 1}, {X - 1, Y - 1}, {X, Y + 1}, {X, Y + 2},
 					{X, Y - 1}, {X, Y - 2}, {X + 1, Y + 1}, {X + 1, Y - 1}};
 
