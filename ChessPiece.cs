@@ -27,7 +27,7 @@ namespace Chess {
 	}
 
 
-
+	// Class for any given Chess piece, categorised by its color, what type of piece it is, its position and its board.
 	public abstract class ChessPiece {
 		public ChessPieceColor Color { get; protected set; }
 		public ChessPieceType Type { get; protected set; }
@@ -42,8 +42,11 @@ namespace Chess {
 			Board = board;
 		}
 
+		// Checks whether moving piece to (newX, newY) is valid for this kind of pie
 		public abstract bool IsValidMove(int newX, int newY);
+		// Returns all spaces on the board this piece can be moved to this turn
 		public abstract List<int> GetPossibleMoves();
+		// Returns a clone of this piece
 		public abstract ChessPiece Clone();
 	}
 
@@ -51,6 +54,7 @@ namespace Chess {
 		public Rook(int x, int y, ChessPieceColor color, ChessBoard board) : base(color, ChessPieceType.Rook, x, y, board) {
 		}
 
+		// Can only move in straight line, without "jumping" over any pieces, or "killing" its own
 		public override bool IsValidMove(int newX, int newY) {
 			if (!Board.IsValidPosition(newX, newY)) return false;
 			int xDir = (newX > X) ? 1 : (newX < X) ? -1 : 0;
@@ -111,6 +115,7 @@ namespace Chess {
 		public Knight(int x, int y, ChessPieceColor color, ChessBoard board) : base(color, ChessPieceType.Knight, x, y, board) {
 		}
 
+		// Allowed piece to move in "L-shape" move
 		public override bool IsValidMove(int newX, int newY) {
 			if (!Board.IsValidPosition(newX, newY)) return false;
 			int diffX = Math.Abs(newX - X);
@@ -143,6 +148,7 @@ namespace Chess {
 		public Bishop(int x, int y, ChessPieceColor color, ChessBoard board) : base(color, ChessPieceType.Bishop, x, y, board) {
 		}
 
+		// Allows piece to move in diagonals without "jumping" over any other piece
 		public override bool IsValidMove(int newX, int newY) {
 			if (!Board.IsValidPosition(newX, newY)) return false;
 			int diffX = Math.Abs(newX - X);
@@ -202,6 +208,7 @@ namespace Chess {
 		public King(int x, int y, ChessPieceColor color, ChessBoard board) : base(color, ChessPieceType.King, x, y, board) {
 		}
 
+		// Allows piece to move by one space
 		public override bool IsValidMove(int newX, int newY) {
 			if (!Board.IsValidPosition(newX, newY)) return false;
 			int diffX = Math.Abs(newX - X);
@@ -234,6 +241,7 @@ namespace Chess {
 		public Queen(int x, int y, ChessPieceColor color, ChessBoard board) : base(color, ChessPieceType.Queen, x, y, board) {
 		}
 
+		// Allows to piece to move in a vertical, horizontal or diagonal line without "jumping" any other piece
 		public override bool IsValidMove(int newX, int newY) {
 			if (!Board.IsValidPosition(newX, newY)) return false;
 			int diffX = Math.Abs(newX - X);
@@ -319,6 +327,7 @@ namespace Chess {
 		public Pawn(int x, int y, ChessPieceColor color, ChessBoard board) : base(color, ChessPieceType.Pawn, x, y, board) {
 		}
 
+		// Allows piece to move either 1 "forward" or 2 "forward" if in its starting position, or move 1 "diagonally forward" to kill a piece
 		public override bool IsValidMove(int newX, int newY) {
 			if (!Board.IsValidPosition(newX, newY)) return false;
 			int yDir = (Color == ChessPieceColor.White) ? 1 : -1;
