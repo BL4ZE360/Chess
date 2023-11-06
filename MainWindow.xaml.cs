@@ -11,19 +11,19 @@ using Image = System.Windows.Controls.Image;
 
 namespace Chess {
 	public partial class MainWindow : Window {
-		private ChessBoard chessBoard;
-		private ChessPiece? selectedPiece;
-		private List<int> possMoves = new List<int>();
-		private Dictionary<Image, ChessPiece> imageToChessPieceMap;
-		private ChessPieceColor turn = ChessPieceColor.White;
-		private bool whiteCheck = false, blackCheck = false; // whiteCheck shows if white has been checked
+		private ChessBoard chessBoard; // Object for board-representation
+		private ChessPiece? selectedPiece; // Variable for the piece the user has selected to move
+		private List<int> possMoves = new List<int>(); // List of possible moves for selectedPiece to move to
+		private Dictionary<Image, ChessPiece> imageToChessPieceMap; // Mapping of each piece image to its respective ChessPiece object
+		private ChessPieceColor turn = ChessPieceColor.White; // Tracker for whose turn it is
+		private bool whiteCheck = false, blackCheck = false; // Variables to determine if a player is in "Check"
 
-		readonly SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110));
-		readonly SolidColorBrush colorLight = new SolidColorBrush(Color.FromRgb(210, 210, 210));
-		readonly SolidColorBrush selectedDark = new SolidColorBrush(Color.FromRgb(81, 100, 150));
-		readonly SolidColorBrush selectedLight = new SolidColorBrush(Color.FromRgb(117, 144, 217));
-		readonly SolidColorBrush maskColorDark = new SolidColorBrush(Color.FromRgb(81, 150, 100));
-		readonly SolidColorBrush maskColorLight = new SolidColorBrush(Color.FromRgb(117, 217, 144));
+		readonly SolidColorBrush colorDark = new SolidColorBrush(Color.FromRgb(110, 110, 110)); // Dark tile color
+		readonly SolidColorBrush colorLight = new SolidColorBrush(Color.FromRgb(210, 210, 210)); // Light tile color
+		readonly SolidColorBrush selectedDark = new SolidColorBrush(Color.FromRgb(81, 100, 150)); // selectedPiece-tile color (if light)
+		readonly SolidColorBrush selectedLight = new SolidColorBrush(Color.FromRgb(117, 144, 217)); // selectedPiece-tile color (if dark)
+		readonly SolidColorBrush maskColorDark = new SolidColorBrush(Color.FromRgb(81, 150, 100)); // Dark tile color if in possMoves
+		readonly SolidColorBrush maskColorLight = new SolidColorBrush(Color.FromRgb(117, 217, 144)); // Light tile color if in possMoves
 
 
 		public MainWindow() {
@@ -33,19 +33,24 @@ namespace Chess {
 			chessBoard = new ChessBoard();
 			chessBoard.ResetBoard();
 
-			turn = ChessPieceColor.White;
-
+			// Initialise the mapping and chessboard
 			imageToChessPieceMap = new Dictionary<Image, ChessPiece>();
 			InitializeChessboard();
 
 			UpdateUI();
 		}
 
+		// Creates the grid and the ChessPieces
 		private void InitializeChessboard() {
+			// Initialise the turn tracker
+			turn = ChessPieceColor.White;
+
 			// Clear the existing children of the uniformGrid
 			uniformGrid.Children.Clear();
 
+			// Iterate through the grid's rows
 			for (int y = 0; y < 8; y++) {
+				// Iterate through the grid's columns
 				for (int x = 0; x < 8; x++) {
 					// Create the grid for each tile
 					Grid grid = new Grid();
@@ -73,6 +78,7 @@ namespace Chess {
 						// Add the piece image to the grid
 						grid.Children.Add(pieceImage);
 
+						// Add the mapping of this piece and its image
 						imageToChessPieceMap.Add(pieceImage, chessBoard.GetPiece(x, y));
 					}
 
@@ -82,28 +88,35 @@ namespace Chess {
 			}
 		}
 
+		// Checks if tile (x,y) has a piece on it
 		private bool HasPiece(int x, int y) {
 			// Check if the grid coordinates correspond to a piece position
 			return chessBoard.GetPiece(x, y) != null;
 		}
 
-		private ImageSource GetPieceImageSource(int x, int y) {
+		// Gets the ImageSource for the piece at (x,y) (if there is one)
+		private ImageSource? GetPieceImageSource(int x, int y) {
 			// Return the appropriate image source based on the piece type and color
+			if (!HasPiece(x, y)) return null;
 			ChessPiece piece = chessBoard.GetPiece(x, y);
 			string pieceName = piece.Color.ToNameString() + piece.Type.ToNameString();
 
 			return new BitmapImage(new Uri("pieces/" + pieceName + ".png", UriKind.Relative));
 		}
 
-
+		// Function to run when a piece is clicked on (whether to make it the selectedPiece, or to kill it with the selectedPiece)
 		private void ChessPiece_MouseDown(object sender, MouseButtonEventArgs e) {
 			// Get the clicked image
 			Image clickedImage = (Image) sender;
+
+			// If there is a selectedPiece currently, either kill the clicked piece or deselect the selectedPiece
 			if (selectedPiece != null) {
 				ChessPiece? killedPiece = null;
 				imageToChessPieceMap.TryGetValue(clickedImage, out killedPiece);
+				// If there is no piece to kill or the piece clicked on is the same color as the player, deselected the selectedPiece
 				if (killedPiece == null || killedPiece.Color == selectedPiece.Color) ClearSelected();
 				else {
+					// Kill the clicked piece and return if it is a valid move to make for the selectedPiece
 					for (int i = 0; i < possMoves.Count; i += 2) {
 						if (possMoves[i] == killedPiece.X && possMoves[i + 1] == killedPiece.Y) {
 							MessageBox.Show("Killing " + killedPiece.Color.ToNameString() + killedPiece.Type.ToNameString());
@@ -115,10 +128,13 @@ namespace Chess {
 				}
 			}
 
+			// Update selectedPiece to this clicked piece
 			imageToChessPieceMap.TryGetValue(clickedImage, out selectedPiece);
-			int x = selectedPiece.X, y = selectedPiece.Y;
-			if (selectedPiece.Color != turn) return;
+			if (selectedPiece == null || selectedPiece.Color != turn) return;
 
+			int x = selectedPiece.X, y = selectedPiece.Y;
+
+			// Get the grid that the selectedPiece is in
 			Grid? grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == y && Grid.GetColumn(g) == x);
 
 			if (grid != null) {
@@ -132,9 +148,10 @@ namespace Chess {
 				}
 			}
 
-			// If initial click, show avaible squares to go to
+			// Show the available squares to move selectedPiece to
 			possMoves = selectedPiece.GetPossibleMoves();
 
+			// For each possible tile to move to, change its tile color to the maskColors
 			for (int i = 0; i < possMoves.Count; i += 2) {
 				x = possMoves[i];
 				y = possMoves[i + 1];
@@ -155,6 +172,7 @@ namespace Chess {
 			}
 		}
 
+		// When a tile with no piece is clicked on, move the selectedPiece to this tile (if valid)
 		private void ChessBoardTile_MouseDown(object sender, MouseButtonEventArgs e) {
 			Rectangle clickedRectangle = (Rectangle) sender;
 
@@ -169,21 +187,25 @@ namespace Chess {
 			}
 		}
 
+		// Move piece to (x,y)
 		private void MovePiece(ChessPiece piece, int x, int y) {
 			if (piece.Color != turn || !MoveIsValid(x, y)) return;
 
 			// If in check, make sure they are un-checking themselves, else reject
 			ChessBoard sim = chessBoard.Clone();
-			ChessPiece simPiece = sim.GetPiece(piece.X, piece.Y);
+			ChessPiece? simPiece = sim.GetPiece(piece.X, piece.Y);
+			if (simPiece == null) return;
 
 			// Simulate the movement and check if still in check
 			sim.MovePiece(simPiece, x, y);
 			sim.turn = turn;
+			// If the user will still be in "Check" after this mvoe, don't allow the user to make this move
 			if (sim.IsThereCheck()) {
 				MessageBox.Show("Doing that move leaves you in Check");
 				return;
 			}
 
+			// Deselect the selectedPiece
 			ClearSelected();
 
 			// Update the piece's position
@@ -197,6 +219,7 @@ namespace Chess {
 			Grid? oldGrid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == piece.Y && Grid.GetColumn(g) == piece.X);
 
 			if (newGrid != null && oldGrid != null) {
+				// If there is a piece to be killed, remove it from the board
 				if (killedPiece != null) {
 					Image killedImage = imageToChessPieceMap.FirstOrDefault(x => x.Value == killedPiece).Key;
 
@@ -208,8 +231,7 @@ namespace Chess {
 					}
 				}
 
-
-
+				// Move the piece within the Board object
 				chessBoard.MovePiece(piece, x, y);
 
 				// Remove the pieceImage from the oldGrid
@@ -223,7 +245,6 @@ namespace Chess {
 					VerticalAlignment = VerticalAlignment.Center,
 					HorizontalAlignment = HorizontalAlignment.Center,
 				};
-
 				newPieceImage.MouseDown += ChessPiece_MouseDown;
 
 				// Update the image position in the UI
@@ -238,7 +259,6 @@ namespace Chess {
 				pieceImage.Visibility = Visibility.Collapsed;
 			}
 
-
 			// Switch turn color
 			if (turn == ChessPieceColor.White) turn = ChessPieceColor.Black;
 			else turn = ChessPieceColor.White;
@@ -247,11 +267,13 @@ namespace Chess {
 
 		}
 
+		// Check for whether a player is in "Check"
 		private void CheckForCheck() {
 			whiteCheck = false; blackCheck = false;
 			if (turn == ChessPieceColor.White) whiteCheck = chessBoard.IsThereCheck();
 			else blackCheck = chessBoard.IsThereCheck();
 
+			// If there is checkmate, print the resepective message and end the game
 			if (chessBoard.IsThereCheckMate()) {
 				MessageBox.Show("END Of GAME");
 				if (turn == ChessPieceColor.White && whiteCheck) MessageBox.Show("CHECKMATE - BLACK WINS!");
@@ -260,12 +282,15 @@ namespace Chess {
 			}
 		}
 
+		// Deselect the selectedPiece and remove its possMoves
 		private void ClearSelected() {
 			if (selectedPiece == null) return;
 
+			// Add the selectedPiece's co-ords to possMoves for resetting the tile colors
 			possMoves.Add(selectedPiece.X);
 			possMoves.Add(selectedPiece.Y);
 
+			// Iterate through the tiles in possMoves and reset their tile colors
 			for (int i = 0; i < possMoves.Count; i += 2) {
 				Grid? grid = uniformGrid.Children.OfType<Grid>().FirstOrDefault(g => Grid.GetRow(g) == possMoves[i + 1] && Grid.GetColumn(g) == possMoves[i]);
 
@@ -280,6 +305,7 @@ namespace Chess {
 					}
 				}
 			}
+			// Reset selectedPiece and possMoves
 			selectedPiece = null;
 			possMoves = new List<int>();
 		}
@@ -305,7 +331,7 @@ namespace Chess {
 			// Show image for each chess piece
 			for (int x = 0; x < 8; x++) {
 				for (int y = 0; y < 8; y++) {
-					ChessPiece piece = chessBoard.GetPiece(x, y);
+					ChessPiece? piece = chessBoard.GetPiece(x, y);
 
 					if (piece != null) {
 						// Construct the image name dynamically based on piece type and color

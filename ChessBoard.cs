@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Chess {
-	// Class for any Chess board, categorised by its 8x8 tiles and their contents
+	// Class for any Chess board, categorised by its 8x8 tiles and their contents, and whose turn it isc
 	public class ChessBoard {
 		private ChessPiece?[,] board;
 		public ChessPieceColor turn = ChessPieceColor.White;
